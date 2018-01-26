@@ -2,7 +2,7 @@
 
 __author__ = 'FENG Si-Bo'
 
-import sys, os, shutil
+import sys, os, re, shutil
 from PyQt5 import QtWidgets
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtCore import Qt
@@ -22,7 +22,7 @@ class GUI(QWidget):
                 os.mkdir(self.cache_path)
             super(GUI.myLabel, self).__init__(parent)
 
-        def mousePressEvent(self, e):  ##重载一下鼠标点击事件
+        def mousePressEvent(self, e):  # 重载一下鼠标点击事件
             # print(self.path)
             if os.path.isfile(self.path):
                 shutil.move(self.path, self.cache_path)
@@ -33,9 +33,10 @@ class GUI(QWidget):
         self.name = "HW craft image"
 
         # self.file_name = 'G:/hwFaceRec/handcraftImage/logphp/message.txt'
-        file_name = QFileDialog.getOpenFileName(self, "选取待处理日志文件", "G:\hwFaceRec\Debug\logphp",
+        file_name = QFileDialog.getOpenFileName(self, "选取待处理日志文件", "G:\hwFaceRec\Debug\logphp/message.txt",
                                                 "Txt files(*.txt)")
         self.file_name = file_name[0]
+        self.image_scale = 0.25
         self.line_index = 0
         self.dict = {}
         self.left_label_class = []
@@ -71,30 +72,38 @@ class GUI(QWidget):
         mainLayout.addWidget(self.top_box)
 
         hboxLayout = QHBoxLayout()
-        # hboxLayout.addStretch()
 
         self.scroll_left = QScrollArea()
         self.scroll_left.setWidget(self.left_grid_box)
         self.scroll_left.setAutoFillBackground(True)
         self.scroll_left.setWidgetResizable(True)
 
-        # self.scroll_right = QScrollArea()
-        # self.scroll_right.setWidget(self.right_grid_box)
-        # self.scroll_right.setAutoFillBackground(True)
-        # self.scroll_right.setWidgetResizable(True)
+        self.scroll_right = QScrollArea()
+        self.scroll_right.setWidget(self.right_grid_box)
+        self.scroll_right.setAutoFillBackground(True)
+        self.scroll_right.setWidgetResizable(True)
 
         hboxLayout.addWidget(self.scroll_left)
-        # hboxLayout.addWidget(self.scroll_right)
+        hboxLayout.addWidget(self.scroll_right)
         mainLayout.addLayout(hboxLayout)
         mainLayout.addWidget(self.bottom_box)
         self.setLayout(mainLayout)
 
     def mouseReleaseEvent(self, e):
         self.freshen('folderA', self.left_grid_box, self.left_layout, self.left_label_class)
-        # self.freshen('folderB', self.right_grid_box, self.right_layout, self.right_label_class)
+        self.freshen('folderB', self.right_grid_box, self.right_layout, self.right_label_class)
 
-    def keyPressEvent(self, e):
-        print(e)
+    def keyPressEvent(self, event):
+        if event.key() == Qt.Key_Escape:
+            self.quit_exe()
+        if event.key() == Qt.Key_S:
+            self.save_logfile()
+        if event.key() == Qt.Key_U or event.key() == Qt.Key_1:
+            self.auto_up_page()
+        if event.key() == Qt.Key_N or event.key() == Qt.Key_3:
+            self.auto_next_page()
+        if event.key() == Qt.Key_C:
+            self.folder_combine()
 
     # 读取日志文件 并且执行程序 程序入口程function
     def readLog(self):
@@ -103,14 +112,14 @@ class GUI(QWidget):
                 self.lines = file.readlines()
                 self.line_nums = self.lines.__len__()
         else:
-            self.show_info("Warning", "没有找到日志文件！请检查文件或文件路径")
+            self.show_info_quit("Warning", "没有找到日志文件！请检查文件或文件路径")
 
     # 创建左右两个layout
     def createBoxes(self):
         self.dict_line()
         self.creatTopBox()
         self.createLeftBox()
-        # self.createRightBox()
+        self.createRightBox()
         self.createBottomBox()
         self.create_image()
 
@@ -130,16 +139,14 @@ class GUI(QWidget):
         self.nums_edit.setText("15")
         self.nums_edit.textChanged.connect(self.create_image)
 
-        slider = QSlider(Qt.Horizontal, self)
+        # slider = QSlider(Qt.Horizontal, self)
 
-        # self.button = QPushButton("执行")
-        # self.button.clicked.connect(self.create_image)
         layout = QHBoxLayout()
         layout.addWidget(self.scale_label)
         layout.addWidget(self.scale_edit)
         layout.addWidget(self.nums_label)
         layout.addWidget(self.nums_edit)
-        layout.addWidget(slider)
+        # layout.addWidget(slider)
         # layout.addWidget(self.button)
 
         self.top_box.setLayout(layout)
@@ -150,11 +157,10 @@ class GUI(QWidget):
         self.left_layout = QGridLayout()
         self.left_grid_box.setLayout(self.left_layout)
 
-    # def createRightBox(self):
-    #     self.right_grid_box = QGroupBox(self.dict['folderB'])
-    #     self.right_layout = QGridLayout()
-    #     self.right_grid_box.setLayout(self.right_layout)
-
+    def createRightBox(self):
+        self.right_grid_box = QGroupBox(self.dict['folderB'])
+        self.right_layout = QGridLayout()
+        self.right_grid_box.setLayout(self.right_layout)
 
     # 根据传来的参数更改显示ui大小
     def create_image(self):
@@ -167,13 +173,11 @@ class GUI(QWidget):
 
             for item in self.left_label_class:
                 item.clear()
-            # for item in self.right_label_class:
-            #     item.clear()
+            for item in self.right_label_class:
+                item.clear()
 
             self.show_images('folderA', self.left_grid_box, self.left_layout, self.left_label_class)
-            # self.show_images('folderB', self.right_grid_box, self.right_layout, self.right_label_class)
-        else:
-            print("不是数字")
+            self.show_images('folderB', self.right_grid_box, self.right_layout, self.right_label_class)
 
     # 判断字符串是否为小数
     def is_float(self, s):
@@ -192,7 +196,6 @@ class GUI(QWidget):
     def show_images(self, folder, box, layout, widge_class, type=None):
         box.setTitle(self.dict[folder])
         img_list = self.getImageList(self.dict[folder])
-        print(img_list)
         if img_list.__len__() == 0:
             if type == 'up':
                 self.auto_up_page()
@@ -210,13 +213,13 @@ class GUI(QWidget):
             imgLabel = GUI.myLabel(i, folder, img_list[i])
             pixMap = QPixmap(img_list[i])
             image_size = pixMap.size()
-            # print(image_size.width(), image_size.height())
             new_width = int(image_size.width() * float(self.image_scale))
             new_height = int(image_size.height() * float(self.image_scale))
-
+            if new_width * 2 > self.desktop_width or new_height > self.desktop_height:
+                self.show_info_quit("Warning", "放缩尺寸设置过大！")
             self.spacing = 5  # 图片之间的间隔
-            num_per_row = int(self.desktop_width / (new_width + self.spacing))
-
+            num_per_row = int(self.desktop_width / 2 / (new_width + 5))
+            # print("能显示{}张/行".format(num_per_row))
             pixMap = pixMap.scaled(new_width, new_height)
             imgLabel.setPixmap(pixMap)
 
@@ -224,8 +227,8 @@ class GUI(QWidget):
             widge_class.append(imgLabel)
 
             # 控件名，行，列，占用行数，占用列数，对齐方式
-            layout.addWidget(imgLabel, row_index, col_index, 1, 1, alignment=Qt.AlignTop)
-            layout.setColumnStretch(2, 10)
+            layout.addWidget(imgLabel, row_index, col_index, 1, 1)
+            # layout.setColumnStretch(2, 10)
             col_index += 1
             if col_index % num_per_row == 0:
                 row_index += 1
@@ -239,21 +242,21 @@ class GUI(QWidget):
 
         self.del_left_btn = QPushButton("删除左文件夹")
         self.del_left_btn.clicked.connect(self.del_left_folder)
-        # self.del_right_btn = QPushButton("删除右文件夹")
-        # self.del_right_btn.clicked.connect(self.del_right_folder)
-        self.up_page_btn = QPushButton("上一页")
+        self.del_right_btn = QPushButton("删除右文件夹")
+        self.del_right_btn.clicked.connect(self.del_right_folder)
+        self.up_page_btn = QPushButton("上一页(U/1)")
         self.up_page_btn.clicked.connect(self.auto_up_page)
-        self.next_page_btn = QPushButton("下一页")
+        self.next_page_btn = QPushButton("下一页(N/3)")
         self.next_page_btn.clicked.connect(self.auto_next_page)
-        self.combine_btn = QPushButton("合并")
+        self.combine_btn = QPushButton("合并(C)")
         self.combine_btn.clicked.connect(self.folder_combine)
-        self.save_btn = QPushButton("保存已处理日志")
+        self.save_btn = QPushButton("保存已处理日志(S)")
         self.save_btn.clicked.connect(self.save_logfile)
-        self.quit_btn = QPushButton("保存并退出")
+        self.quit_btn = QPushButton("保存并退出(Esc)")
         self.quit_btn.clicked.connect(self.quit_exe)
 
         bottom_layout.addWidget(self.del_left_btn)
-        # bottom_layout.addWidget(self.del_right_btn)
+        bottom_layout.addWidget(self.del_right_btn)
         bottom_layout.addWidget(self.up_page_btn)
         bottom_layout.addWidget(self.next_page_btn)
         bottom_layout.addWidget(self.combine_btn)
@@ -281,16 +284,16 @@ class GUI(QWidget):
             shutil.move(self.dict['folderA'], self.cache_path)
         self.auto_next_page()
 
-    # def del_right_folder(self):
-    #     if os.path.exists(self.dict['folderB']):
-    #         shutil.move(self.dict['folderB'], self.cache_path)
-    #     self.auto_next_page()
+    def del_right_folder(self):
+        if os.path.exists(self.dict['folderB']):
+            shutil.move(self.dict['folderB'], self.cache_path)
+        self.auto_next_page()
 
     # 合并两个文件夹里面的文件
     def folder_combine(self):
         if os.path.exists(self.dict['folderA']) and os.path.exists(self.dict['folderB']):
             shutil.move(self.dict['folderA'], self.dict['folderB'])
-        self.do_same_with_RGB(self.dict['folderA'], self.dict['folderB'])
+        self.RGB_combine(self.dict['folderA'], self.dict['folderB'])
         self.auto_next_page()
 
     # 在RGB文件夹中做同样的事情
@@ -313,7 +316,7 @@ class GUI(QWidget):
         if self.line_index >= 0:
             self.dict_line()
             self.show_images('folderA', self.left_grid_box, self.left_layout, self.left_label_class, type='up')
-            # self.show_images('folderB', self.right_grid_box, self.right_layout, self.right_label_class, type='up')
+            self.show_images('folderB', self.right_grid_box, self.right_layout, self.right_label_class, type='up')
         else:
             # 显示提示
             self.show_info("Warning", "没有更多的上一页了！")
@@ -322,10 +325,12 @@ class GUI(QWidget):
     def auto_next_page(self):
         self.clean_all_widge()
         self.line_index += 1
+        if self.line_index % 15 == 0:
+            self.save_logfile()
         if self.line_index < self.line_nums:
             self.dict_line()
             self.show_images('folderA', self.left_grid_box, self.left_layout, self.left_label_class)
-            # self.show_images('folderB', self.right_grid_box, self.right_layout, self.right_label_class)
+            self.show_images('folderB', self.right_grid_box, self.right_layout, self.right_label_class)
         else:
             # 显示日志文件已经读取完
             self.show_info("Warning", "没有更多的下一页了！")
@@ -348,7 +353,9 @@ class GUI(QWidget):
             if key == "errortype" or key == "folderA" or key == "folderB" or key == "score":
                 self.dict[key] = value
             else:
-                self.show_info("Warning", "日志文件Key有错误！")
+                self.show_info_quit("Warning", "日志文件Key有错误！")
+        if not self.dict['errortype'] == '500':
+            self.show_info_quit("Warning", "不是该程序处理的日志文件类型！errortype=500")
 
     # 获取文件夹中的文件列表（有递归）
     def getImageList(self, path):
@@ -359,20 +366,27 @@ class GUI(QWidget):
                 child = os.path.join(path, parent)
                 if os.path.isdir(child):
                     self.getImageList(child)
-                elif child.endswith('.jpg') or child.endswith('.JPG'):
+                elif child.endswith('.jpg') or child.endswith('.JPG') or \
+                        child.endswith('.jpeg') or child.endswith('.JPEG') or \
+                        child.endswith('.png') or child.endswith('.PNG') or \
+                        child.endswith('.bmp') or child.endswith('.BMP') or\
+                        child.endswith('.tiff') or child.endswith('.TIFF'):
                     img_list.append(child)
         else:
             pass
         return img_list
 
-    # 显示信息提示框
     def show_info(self, title, message):
+        QMessageBox.information(self, title, self.tr(message))
+
+    # 显示信息提示框
+    def show_info_quit(self, title, message):
         QMessageBox.information(self, title, self.tr(message))
         self.quit_exe()
 
 
-# if __name__ == '__main__':
-app = QApplication(sys.argv)
-ex = GUI()
-ex.show()
-sys.exit(app.exec_())
+if __name__ == '__main__':
+    app = QApplication(sys.argv)
+    ex = GUI()
+    ex.show()
+    sys.exit(app.exec_())

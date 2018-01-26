@@ -1,61 +1,42 @@
 ```
-app author: FENG SiBo  sibofeng@mail.bnu.edu.cn
-app version: handcraft-image-python-v-0.0
-develop date: 2018/1/15
-coding language: python-2.7
-relevant package: tkinter pillow PyQt-5.0
+
+app author: FENG Si-Bo  sibofeng@mail.bnu.edu.cn
+
+app version: handcraft-image-python-v-1.0
+
+develop date: 2018/1/25
+
+coding language: python-3.6
+
+relevant package: PyQt-5.0
+
 ```
 
-### å·¥å…·åŠŸèƒ½
+### Èí¼þËµÃ÷£º
+¸Ã°æ±¾Èí¼þ·ÖÎªÁ½¸ö one-columnµÄÊÇ´¦ÀíÒ»¸öÎÄ¼þ¼ÐµÄ two-columnµÄÊÇ´¦ÀíÁ½¸öÎÄ¼þ¼ÐµÄ Á½¸ö¹¦ÄÜÀàËÆ ²Ù×÷ÏàËÆ
 
-ç‚¹å‡»å›¾ç‰‡ï¼šè¯¥å›¾ç‰‡ä¼šåˆ é™¤
+µã»÷Í¼Æ¬£ºÉ¾³ý¸ÃÍ¼Æ¬
+ºÏ²¢£¨ÏÞtwo-column£©£ºÎÄ¼þ¼Ð×óÏòÓÒºÏ²¢
+±£´æ£º±£´æÎ´´¦ÀíµÄÈÕÖ¾
+ 
+### Ê¹ÓÃ·½·¨£º
 
-ç‚¹å‡»åˆå¹¶æŒ‰é’®ï¼šå·¦é¢æ–‡ä»¶å¤¹å›¾åƒå‘å³æ–‡ä»¶å¤¹åˆå¹¶
+´ò¿ªÈí¼þ
+S1£ºÑ¡ÔñÈÕÖ¾ÎÄ¼þ£¨Ð´·¨¼ûÏÂ£©£¬Ñ¡Ôñºó³ÌÐò×Ô¶¯½âÎö£¬ÅÐ¶ÏÎÄ¼þÐ´µÄÊÇ·ñÕýÈ·
+S2£ºÈí¼þµÄÉÏÒ»ÅÅÊÇÉèÖÃUI½çÃæµÄ²ÎÊý ¿ÉÒÔ¸ü¸Ä ÊäÈë·ÇÊý×ÖÖ®ÍâµÄ×Ö·ûÎÞÐ§
+·ÅËõÏµÊý²»ÒªÌ«´ó£º³¬³ö½çÃæÏÔÊ¾´óÐ¡ Èí¼þ»á±ÀÀ£ Ã¿¸öÇøÓòÏÔÊ¾ÊýÁ¿Ã»ÓÐÒªÇó¿´ÎÄ¼þ¼ÐËùÓÐÍ¼Æ¬ ¿ÉÒÔÉèÖÃÐ¡µã Èí¼þÏÔÊ¾Í¼Æ¬ËÙ¶È»áÌáÉý
+ÒªÏÔÊ¾ÎÄ¼þ¼ÐËùÓÐÍ¼Æ¬ ÉèÖÃÒ»¸ö³¬¼¶´óµÄÊý
+ÖÐ¼äÊÇÏÔÊ¾ÎÄ¼þ¼ÐÍ¼Æ¬µÄ½çÃæ ¾¡Á¿²»Òªµã»÷¿Õ°×´¦£¨´Ë´¦ÓÐbug£¬ÔÝÎ´½â¾ö£©
+ÏÂÃæÊÇ²Ù×÷°´Å¥ °ó¶¨ÓÐ¿ì½Ý¼ü °´ÏàÓ¦µÄ×Ö·û»òÊý×Ö¼´¿É
+Èí¼þËùÓÐÉ¾³ýÎÄ¼þÈ«²¿±£´æÔÚÈí¼þÍ¬¼¶Ä¿Â¼cacheÏÂÃæ ÈçÓÐÎóÉ¾ÊÖ¶¯ÕÒ»Ø£¨ÔÝÎ´ÓÐ³·Ïú¹¦ÄÜ£©
+S3£ºÍË³öÈí¼þµã»÷ÍË³ö¼ü ÒÔ±£´æÈÕÖ¾£¨³ÌÐòÉè¶¨Ã¿15´Î²Ù×÷×Ô¶¯±£´æÈÕÖ¾£©
 
-ä¸‹ä¸€æ¡ï¼šå¤„ç†ä¸‹ä¸€æ¡å†…å®¹
+### ÈÕÖ¾Ð´·¨
+ËÄ¸ö×Ö¶Î errortype£ºÒ»¸öÎÄ¼þ¼ÐÐ´400 Á½¸öÎÄ¼þ¼ÐÐ´500 folderA folderB£ºÓÃ¾ø¶ÔÂ·¾¶ score£ºÔÝÊ±Ã»ÓÃ
+´¦ÀíÒ»¸öÎÄ¼þ¼Ð:
+errortype|400;folderA|G:/hwFaceRec/Debug/IR_FACE_PHOTOS_DST/yuv/id_length_4/1005_8116015120010324;folderB|;score|995
 
+´¦ÀíÁ½¸öÎÄ¼þ¼Ð£º
+errortype|500;folderA|G:/hwFaceRec/Debug/IR_FACE_PHOTOS_DST/yuv/id_length_4/1005_8116015120010324;folderB|G:/hwFaceRec/Debug/des_image/yuv/id_length_4/004781_8116015120009945;score|995
 
-### è½¯ä»¶é…ç½®æ–‡ä»¶AppSettings.configå†™å…¥è¦æ±‚
-
-e.g.
-
-app_name=å¤„ç†å›¾ç‰‡
-image_scale=0.25
-
-#### è¯´æ˜Žï¼š
-
-app_name:è½¯ä»¶åå­— è¿™ä¸ªä¸éœ€è¦æ”¹
-
-image_scale:å›¾ç‰‡æ”¾ç¼©ç³»æ•° è½¯ä»¶æ˜¾ç¤ºå›¾ç‰‡å¤§å°æ˜¯æŒ‰ç…§æ¯ä¸ªæ–‡ä»¶å¤¹ç¬¬ä¸€å¼ å›¾ç‰‡å¤§å°ä¸ºåŸºæœ¬å°ºå¯¸ä¹˜ä»¥æ”¾ç¼©ç³»æ•°ä½œä¸ºæ˜¾ç¤ºå›¾ç‰‡çš„å¤§å°
-å¯ä»¥è°ƒèŠ‚è¿™ä¸ªæ”¾ç¼©ç³»æ•°æ”¹å˜è½¯ä»¶æ˜¾ç¤ºå›¾ç‰‡å¤§å°
-
-
-### è½¯ä»¶å¤„ç†çš„æ—¥å¿—æ–‡ä»¶message.txtå†™å…¥è¦æ±‚
-
-e.g.
-
-type|500;folderA|G:/hwFaceRec/1400_8116016070005296;folderB|G:/hwFaceRec/004185_8116015120009892;score|969
-type|500;folderA|G:/hwFaceRec/1400_9224564562155296;folderB|G:/hwFaceRec/004185_6316015120009892;score|954
-...
-
-#### è¯´æ˜Ž:
-
-type:ç±»åž‹ è¿™ä¸ªç‰ˆæœ¬éšæ„å¡«å†™
-folderAï¼šç¬¬ä¸€ä¸ªè¦å¤„ç†çš„æ–‡ä»¶å¤¹è·¯å¾„ è½¯ä»¶å¯¹åº”æ˜¾ç¤ºå·¦é¢
-folderBï¼šç¬¬äºŒä¸ªè¦å¤„ç†çš„æ–‡ä»¶å¤¹è·¯å¾„ è½¯ä»¶å¯¹åº”æ˜¾ç¤ºå³è¾¹
-scoreï¼šå¾—åˆ† è¿™ä¸ªç‰ˆæœ¬éšæ„å¡«å†™
-
-
-### ï¼ï¼ï¼ï¼ï¼ï¼ï¼ä½¿ç”¨æ³¨æ„ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼
-
-0. å·¥å…·åŒ…æ‹¬å››ä¸ªä¸ªæ–‡ä»¶ï¼šä¸»ç¨‹åº
-    main.exe ä¸»ç¨‹åº
-    AppSettings.config é…ç½®æ–‡ä»¶
-    message.txt æ—¥å¿—æ–‡ä»¶
-    README.md æ­¤æ–‡ä»¶
-
-1. message.txtæ–‡ä»¶é‡Œé¢çš„è·¯å¾„è¦æ˜¯ç”¨**ç»å¯¹è·¯å¾„**
-
-2. é€€å‡ºæ—¶è¦è®°å¾—ï¼Œ**ç‚¹å‡»Fileèœå•é‡Œé¢çš„Exit**ï¼Œä¸è¦ç›´æŽ¥ç‚¹Ã—å…³é—­ï¼Œç›®çš„æ˜¯å°†æœªå¤„ç†çš„æ—¥å¿—é‡æ–°å†™å…¥æ–‡ä»¶ï¼Œåˆ é™¤å¤„ç†è¿‡çš„æ—¥å¿—
-ä¸è¦ç›´æŽ¥ç‚¹Ã—ï¼Œç‚¹Ã—é™¤äº†å¢žåŠ äº†ä¸‹æ¬¡çš„å·¥ä½œé‡ä¹‹å¤–ï¼Œå¯¹æ•°æ®æ²¡ä»€ä¹ˆå½±å“ã€‚ã€‚ã€‚
-
+¿ÉÒÔ°ÑÒ»¸öÎÄ¼þ¼ÐÐ´³ÉÁ½¸öÎÄ¼þ¼ÐÈÕÖ¾ÐÎÊ½ Í¬Ê±´¦ÀíÁ½¸öÎÄ¼þ¼Ð

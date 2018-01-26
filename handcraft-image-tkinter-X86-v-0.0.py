@@ -1,12 +1,11 @@
-'''
-for python 3.6
-'''
 # -*- coding: utf-8 -*-
 # tkinter
-from tkinter import *
+# for python version = 2.7*
+from Tkinter import *
 from PIL import Image, ImageTk
 import os
 import shutil
+
 
 class Window(Frame):
     def __init__(self, master, screen_width, screen_height, image_scale=0.2):
@@ -99,7 +98,8 @@ class Window(Frame):
                          img_row_num=img_row_num, img_col_num=img_col_num, new_img_size=new_img_size)
 
     # 显示图片组
-    def image_group(self, image_list, widget, start_x=0, start_y=0, img_row_num=5, img_col_num = 3, new_img_size=(48, 64)):
+    def image_group(self, image_list, widget, start_x=0, start_y=0, img_row_num=5, img_col_num=3,
+                    new_img_size=(48, 64)):
         x = start_x
         y = start_y
         w = new_img_size[0]
@@ -182,7 +182,6 @@ class Window(Frame):
     # 显示单张图片
     def show_image(self, path, x=0, y=0):
         load = Image.open(path)
-        print(load)
         m, n = load.size
         new_size = (int(m * self.image_scale), int(n * self.image_scale))
         load = load.resize(new_size)
