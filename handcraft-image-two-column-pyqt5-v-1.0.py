@@ -24,6 +24,7 @@ class GUI(QWidget):
 
         def mousePressEvent(self, e):  # 重载一下鼠标点击事件
             # print(self.path)
+
             if os.path.isfile(self.path):
                 shutil.move(self.path, self.cache_path)
 
@@ -90,8 +91,10 @@ class GUI(QWidget):
         self.setLayout(mainLayout)
 
     def mouseReleaseEvent(self, e):
-        self.freshen('folderA', self.left_grid_box, self.left_layout, self.left_label_class)
-        self.freshen('folderB', self.right_grid_box, self.right_layout, self.right_label_class)
+        self.clean_all_widge()
+        self.dict_line()
+        self.show_images('folderA', self.left_grid_box, self.left_layout, self.left_label_class)
+        self.show_images('folderB', self.right_grid_box, self.right_layout, self.right_label_class)
 
     def keyPressEvent(self, event):
         if event.key() == Qt.Key_Escape:
@@ -112,7 +115,7 @@ class GUI(QWidget):
                 self.lines = file.readlines()
                 self.line_nums = self.lines.__len__()
         else:
-            self.show_info_quit("Warning", "没有找到日志文件！请检查文件或文件路径")
+            self.show_info("Warning", "没有找到日志文件！请检查文件或文件路径", isquit=1)
 
     # 创建左右两个layout
     def createBoxes(self):
@@ -129,9 +132,10 @@ class GUI(QWidget):
 
         self.scale_label = QLabel(self)
         self.scale_label.setText("图片放缩")
-        self.scale_edit = QLineEdit()
-        self.scale_edit.setText("0.25")
-        self.scale_edit.textChanged.connect(self.create_image)
+
+        self.slide_bar = QSlider(Qt.Horizontal, self)
+        self.slide_bar.setValue(25)
+        self.slide_bar.valueChanged.connect(self.create_image)
 
         self.nums_label = QLabel(self)
         self.nums_label.setText("每个区域显示的图片数")
@@ -143,7 +147,7 @@ class GUI(QWidget):
 
         layout = QHBoxLayout()
         layout.addWidget(self.scale_label)
-        layout.addWidget(self.scale_edit)
+        layout.addWidget(self.slide_bar)
         layout.addWidget(self.nums_label)
         layout.addWidget(self.nums_edit)
         # layout.addWidget(slider)
@@ -164,18 +168,15 @@ class GUI(QWidget):
 
     # 根据传来的参数更改显示ui大小
     def create_image(self):
-        scale = self.scale_edit.text()
+        scale = self.slide_bar.value() / 100.
         nums = self.nums_edit.text()
 
-        if (scale.isdigit() or self.is_float(scale)) and not scale == '0' and nums.isdigit():
-            self.image_scale = float(self.scale_edit.text())
-            self.area_image_nums = int(self.nums_edit.text())
+        if (not scale == '0' and nums.isdigit()):
+            self.image_scale = float(scale)
+            self.area_image_nums = int(nums)
 
-            for item in self.left_label_class:
-                item.clear()
-            for item in self.right_label_class:
-                item.clear()
-
+            self.clean_all_widge()
+            self.dict_line()
             self.show_images('folderA', self.left_grid_box, self.left_layout, self.left_label_class)
             self.show_images('folderB', self.right_grid_box, self.right_layout, self.right_label_class)
 
@@ -194,9 +195,19 @@ class GUI(QWidget):
 
     # 在左右两个group box中显示图片, type='up' or 'down'
     def show_images(self, folder, box, layout, widge_class, type=None):
-        box.setTitle(self.dict[folder])
+        import time
+        print("{}创建文件目录{}".format(time.time(), folder))
+        box.setTitle('文件夹路径:' + self.dict[folder] + '得分:' + self.dict['score'])
+
+        # 分数大于某个阈值自动下一页
+        score = int(self.dict['score'])
+        if score > 900:
+            self.auto_next_page()
+
+        # 文件夹为空，自动下一页或者上一页
         img_list = self.getImageList(self.dict[folder])
         if img_list.__len__() == 0:
+            print("文件夹{}文件长度为0".format(self.dict[folder]))
             if type == 'up':
                 self.auto_up_page()
             else:
@@ -215,10 +226,10 @@ class GUI(QWidget):
             image_size = pixMap.size()
             new_width = int(image_size.width() * float(self.image_scale))
             new_height = int(image_size.height() * float(self.image_scale))
-            if new_width * 2 > self.desktop_width or new_height > self.desktop_height:
-                self.show_info_quit("Warning", "放缩尺寸设置过大！")
+            if new_width > self.desktop_width / 2. or new_height > self.desktop_height:
+                self.show_info("Warning", "放缩尺寸设置过大！", isquit=1)
             self.spacing = 5  # 图片之间的间隔
-            num_per_row = int(self.desktop_width / 2 / (new_width + 5))
+            num_per_row = int(self.desktop_width / 2 / (new_width + self.spacing))
             # print("能显示{}张/行".format(num_per_row))
             pixMap = pixMap.scaled(new_width, new_height)
             imgLabel.setPixmap(pixMap)
@@ -272,11 +283,12 @@ class GUI(QWidget):
 
     # 保存日志文件（从当前处理的条目开始保存，处理过的删除掉）
     def save_logfile(self):
-        if os.path.exists(self.file_name):
-            os.remove(self.file_name)
-            with open(self.file_name, 'w') as file:
-                for i in range(self.line_index, self.line_nums):
-                    file.writelines(self.lines[i])
+        if not self.line_index == 0:
+            if os.path.exists(self.file_name):
+                os.remove(self.file_name)
+                with open(self.file_name, 'w') as file:
+                    for i in range(self.line_index, self.line_nums):
+                        file.writelines(self.lines[i])
 
     # 删除左边整个文件夹
     def del_left_folder(self):
@@ -303,12 +315,6 @@ class GUI(QWidget):
         if os.path.exists(src) and os.path.exists(dst):
             shutil.move(src, dst)
 
-    # 重新排列文件夹中的图片
-    def freshen(self, folder, box, layout, label_class):
-        for item in label_class:
-            item.clear()
-        self.show_images(folder, box, layout, label_class)
-
     # 向上翻页
     def auto_up_page(self):
         self.clean_all_widge()
@@ -319,13 +325,13 @@ class GUI(QWidget):
             self.show_images('folderB', self.right_grid_box, self.right_layout, self.right_label_class, type='up')
         else:
             # 显示提示
-            self.show_info("Warning", "没有更多的上一页了！")
+            self.show_info("Warning", "没有更多的上一页了！", isquit=0)
 
     # 向下翻页
     def auto_next_page(self):
         self.clean_all_widge()
         self.line_index += 1
-        if self.line_index % 15 == 0:
+        if self.line_index % 10 == 0:
             self.save_logfile()
         if self.line_index < self.line_nums:
             self.dict_line()
@@ -333,16 +339,22 @@ class GUI(QWidget):
             self.show_images('folderB', self.right_grid_box, self.right_layout, self.right_label_class)
         else:
             # 显示日志文件已经读取完
-            self.show_info("Warning", "没有更多的下一页了！")
+            self.show_info("Warning", "没有更多的下一页了！", isquit=1)
 
     # 清除所有组件 清除list 清除dict
     def clean_all_widge(self):
         for item in self.left_label_class:
+            item.deleteLater()
             item.clear()
         for item in self.right_label_class:
+            item.deleteLater()
             item.clear()
-
+        del self.left_label_class
+        del self.right_label_class
+        self.left_label_class = []
+        self.right_label_class = []
         self.dict.clear()
+        self.dict = {}
 
     # 解析日志
     def dict_line(self):
@@ -353,9 +365,9 @@ class GUI(QWidget):
             if key == "errortype" or key == "folderA" or key == "folderB" or key == "score":
                 self.dict[key] = value
             else:
-                self.show_info_quit("Warning", "日志文件Key有错误！")
+                self.show_info("Error", "日志文件Key有错误！")
         if not self.dict['errortype'] == '500':
-            self.show_info_quit("Warning", "不是该程序处理的日志文件类型！errortype=500")
+            self.show_info("Error", "不是该程序处理的日志文件类型！errortype=500")
 
     # 获取文件夹中的文件列表（有递归）
     def getImageList(self, path):
@@ -369,20 +381,17 @@ class GUI(QWidget):
                 elif child.endswith('.jpg') or child.endswith('.JPG') or \
                         child.endswith('.jpeg') or child.endswith('.JPEG') or \
                         child.endswith('.png') or child.endswith('.PNG') or \
-                        child.endswith('.bmp') or child.endswith('.BMP') or\
+                        child.endswith('.bmp') or child.endswith('.BMP') or \
                         child.endswith('.tiff') or child.endswith('.TIFF'):
                     img_list.append(child)
         else:
             pass
         return img_list
 
-    def show_info(self, title, message):
+    def show_info(self, title, message, isquit=1):
         QMessageBox.information(self, title, self.tr(message))
-
-    # 显示信息提示框
-    def show_info_quit(self, title, message):
-        QMessageBox.information(self, title, self.tr(message))
-        self.quit_exe()
+        if isquit == 1:
+            self.quit_exe()
 
 
 if __name__ == '__main__':
